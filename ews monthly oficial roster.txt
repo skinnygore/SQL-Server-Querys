@@ -1,0 +1,331 @@
+SELECT A.[Employee_Code]
+      ,A.[NT_ID]
+      ,A.[Employee_Name]
+      ,A.[Date_of_Joining]
+      --,A.[Date]
+      ,A.[Loc_Name]
+      ,A.[Location_Code]
+      ,A.[Leader Name]
+      ,A.[Primary_Process_Type]
+      ,A.[Allocation_Status]
+      ,A.[Supervisor_Name]
+      ,A.[Production_Status]
+      ,A.[Department_Code]
+      ,A.[Department_Name]
+      ,A.[LOB]
+      ,A.[Offshore_Process_Name]
+	  ,A.[EndOfMonth]
+      ,A.[Open Time hrs]  
+      ,B.[Calls Handled]  
+      ,B.[Calls Handled]  / NULLIF(A.[Open Time hrs],0)  AS [Calls per Hour]
+      ,A.[Scheduled Time hrs]
+      ,A.[NCNS count]
+      ,A.[Outage hrs]  
+      ,A.[Outage hrs] /NULLIF(A.[Scheduled Time hrs],0) AS [Outage Rate]
+      ,A.[VTO hrs]
+      ,A.[VTO hrs] /NULLIF(A.[Scheduled Time hrs],0) AS [VTO Rate]
+      ,A.[Unplanned Absence hrs]
+      ,A.[Coaching hrs]
+      ,A.[Coaching hrs] /NULLIF(A.[Scheduled Time hrs],0) AS [Coaching Rate]
+      ,A.[Meeting hrs]
+      ,A.[Meeting hrs] /NULLIF(A.[Scheduled Time hrs],0) AS [Meeting Rate]
+      ,L.[Absent Advocate Count] 
+      ,M.[Scorecard Rating]
+      ,N.[CAP_PIP count]
+      ,O.[QVC Amount] 
+        
+     ,D.[Number impact] AS [NCNS count Score]
+     ,E.[Number impact] AS [Outage Rate Score]
+     ,F.[Number impact] AS [VTO Rate Score]
+     ,G.[Number impact] AS [Unplanned Absence Score]
+     ,H.[Number impact] AS [Calls per Hour Score]
+     ,I.[Number impact] AS [Coaching hrs Score]
+     ,J.[Number impact] AS [Meeting hrsScore]
+     ,P.[Number impact] AS [CAP_PIP countScore]
+     ,Q.[Number impact] AS [Absent Advocate Score]
+     ,R.[Number impact] AS [Scorecard Rating Score]
+     ,S.[Number impact] AS [QVC Amount score]
+
+     ,count(D.[Number impact] )+count(E.[Number impact] )+count(F.[Number impact])+count(G.[Number impact])+count(H.[Number impact])
+     +count(I.[Number impact])+count(J.[Number impact] ) +count(P.[Number impact])+count(Q.[Number impact] )
+     +count(R.[Number impact])+count(S.[Number impact] ) AS [Count of Available Data Points]
+
+,((COALESCE(D.[Number impact], 0) + COALESCE(E.[Number impact], 0) + COALESCE(Q.[Number impact], 0) + COALESCE(F.[Number impact], 0) + COALESCE(G.[Number impact], 0) + COALESCE(P.[Number impact], 0)) /
+NULLIF((CASE WHEN D.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN E.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN Q.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN F.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN G.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN P.[Number impact] IS NOT NULL THEN 1 ELSE 0 END), 0)) AS [Negative Indicators Ave.]
+
+,(COALESCE(H.[Number impact], 0) + COALESCE(I.[Number impact], 0) + COALESCE(J.[Number impact], 0) + COALESCE(R.[Number impact], 0) + COALESCE(S.[Number impact], 0)) /
+NULLIF((CASE WHEN H.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN I.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN J.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN R.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN S.[Number impact] IS NOT NULL THEN 1 ELSE 0 END), 0) AS [Positive Indicators Ave.]
+
+
+,((COALESCE(D.[Number impact], 0) + COALESCE(E.[Number impact], 0) + COALESCE(Q.[Number impact], 0) + COALESCE(F.[Number impact], 0) + COALESCE(G.[Number impact], 0) + COALESCE(P.[Number impact], 0)) /
+NULLIF((CASE WHEN D.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN E.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN Q.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN F.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN G.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN P.[Number impact] IS NOT NULL THEN 1 ELSE 0 END), 0))
++
+((COALESCE(H.[Number impact], 0) + COALESCE(I.[Number impact], 0) + COALESCE(J.[Number impact], 0) + COALESCE(R.[Number impact], 0) + COALESCE(S.[Number impact], 0)) /
+NULLIF((CASE WHEN H.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN I.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN J.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN R.[Number impact] IS NOT NULL THEN 1 ELSE 0 END) +
+(CASE WHEN S.[Number impact] IS NOT NULL THEN 1 ELSE 0 END), 0)) AS [Burnout Index2]
+
+,CASE
+WHEN (A.[NCNS count] > 2 OR A.[Unplanned Absence hrs] > 40 OR L.[Absent Advocate Count] >100 or N.[CAP_PIP count] >2 ) THEN 1
+ELSE 0
+END AS [Auto-Fail Flag]
+
+    ,A.[Variable12]
+    ,A.[Variable11]
+    ,A.[Variable10]
+    ,A.[Variable9]
+    ,A.[Variable8]
+    ,A.[Variable7]
+    ,A.[Variable6]
+    ,A.[Variable5]
+    ,A.[Variable4]
+    ,A.[Variable3]
+    ,A.[Variable2]
+    ,A.[Variable1]
+FROM (
+      SELECT A.[Employee_Code]
+	      ,A.[NT_ID]
+      ,A.[Employee_Name]
+      ,A.[Date_of_Joining]
+           ,A.[Loc_Name]
+      ,A.[Location_Code]
+      ,A.[Leader Name]
+      ,A.[Primary_Process_Type]
+      ,A.[Allocation_Status]
+      ,A.[Supervisor_Name]
+      ,A.[Production_Status]
+      ,A.[Department_Code]
+      ,A.[Department_Name]
+      ,A.[LOB]
+      ,A.[Offshore_Process_Name]
+	  ,a.[End_Of_Month]
+    
+          ,12 AS [Variable12]
+          ,11 AS [Variable11]
+          ,10 AS [Variable10]
+          ,9 AS [Variable9]
+          ,8  AS [Variable8]
+          ,7  AS [Variable7]
+          ,6  AS [Variable6]
+          ,5  AS [Variable5]
+          ,4  AS [Variable4]
+          ,3  AS [Variable3]
+          ,2  AS [Variable2]
+          ,1  AS [Variable1]
+    ,SUM(CASE  
+                WHEN C.[OpenTime?] = 'YES' THEN (C.[Sum of Minutes])/60  
+                ELSE null  
+            END) AS [Open Time hrs]
+    ,SUM(CASE    
+        WHEN C.[Scheduled] = 'YES' THEN (C.[Sum of Minutes])/60  
+        ELSE null  END) AS [Scheduled Time hrs] 
+    ,SUM(CASE    
+        WHEN C.[Aux] LIKE '%No Call%' THEN 1  
+        ELSE null  END) AS [NCNS count]
+    ,SUM(CASE    
+        WHEN C.[Category] LIKE '%Outage%' THEN (C.[Sum of Minutes])/60  
+        ELSE null  END) AS [Outage hrs] 
+    ,SUM(CASE    
+        WHEN C.[Category] LIKE '%VTO%' THEN (C.[Sum of Minutes])/60  
+        ELSE null  END) AS [VTO hrs]
+    ,SUM(CASE    
+        WHEN C.[Category] LIKE '%Unscheduled%' THEN (C.[Sum of Minutes])/60  
+        ELSE null  END) AS [Unplanned Absence hrs]
+    ,SUM(CASE    
+        WHEN C.[Category] LIKE '%Coaching%' THEN (C.[Sum of Minutes])/60  
+        ELSE null  END) AS [Coaching hrs]
+    ,SUM(CASE    
+        WHEN C.[Category] LIKE '%Meeting%' THEN (C.[Sum of Minutes])/60  
+        ELSE null  END) AS [Meeting hrs]
+
+    FROM [OGADW2024].[dbo].[vwHistoricalRosterMontly] A (NOLOCK)  
+    LEFT JOIN [OGADW2024].[dbo].[tbEWS_IEX_RAW] C ON A.[Employee_Code] = C.[EID2] AND EOMONTH(DATEADD(DAY, 0,A.[WeekEnd]))  =EOMONTH(DATEADD(DAY, 0,C.[Weekending] ))  
+   --WHERE A.[Employee Code] = 1806881  
+    GROUP BY 
+	A.[Employee_Code]
+	,C.[EID2]
+      ,A.[NT_ID]
+      ,A.[Employee_Name]
+      ,A.[Date_of_Joining]
+      ,A.[Date]
+      ,A.[Loc_Name]
+      ,A.[Location_Code]
+      ,A.[Leader Name]
+      ,A.[Primary_Process_Type]
+      ,A.[Allocation_Status]
+      ,A.[Supervisor_Name]
+      ,A.[Production_Status]
+      ,A.[Department_Code]
+      ,A.[Department_Name]
+      ,A.[LOB]
+      ,A.[Offshore_Process_Name]
+	  ,EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) 
+	  ,EOMONTH(DATEADD(DAY, 0,C.[Weekending] )) 
+	  
+) A  
+LEFT JOIN (  
+    SELECT EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) as [EndOfMonth]
+          ,A.[Employee_Code] 
+		 -- ,A.[WeekEnd]
+          ,SUM(B.[Sum of ACD Calls]) AS [Calls Handled]  
+    FROM [OGADW2024].[dbo].[vwHistoricalRosterWeekly] A (NOLOCK)  
+    LEFT JOIN [OGADW2024].[dbo].[tbEWS_CALL_RAW] B ON A. [Employee_Code]= B.[EID] AND EOMONTH(DATEADD(DAY, 0,A.[WeekEnd]))  =EOMONTH(DATEADD(DAY, 0,b.[Weekending] )) 
+    --WHERE A.[Employee Code] = 1806881  
+    GROUP BY EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) 
+          ,A. [Employee_Code]
+) B ON a.[EndOfMonth]= b.[EndOfMonth] AND A.[Employee_Code] = B.[Employee_Code]
+LEFT JOIN (  
+    SELECT EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) as [EndOfMonth]  
+          ,A.[Employee_Code]  
+          ,SUM(L.[Absent Advocate Count]) AS [Absent Advocate Count]  
+    FROM [OGADW2024].[dbo].[vwHistoricalRosterWeekly] A (NOLOCK)  
+    LEFT JOIN [OGADW2024].[dbo].[tbEWS_AbsAdv_RAW] L ON A.[Employee_Code] = L.[Employee ID] AND EOMONTH(DATEADD(DAY, 0,A.[WeekEnd]))  =EOMONTH(DATEADD(DAY, 0,L.[Weekending] ))
+   --WHERE A.[Employee Code] = 1806881  
+    GROUP BY EOMONTH(DATEADD(DAY, 0,A.[WeekEnd]))
+          ,A.[Employee_Code]
+) L ON a.[EndOfMonth] = L.[EndOfMonth]   AND A.[Employee_Code] = L.[Employee_Code]
+LEFT JOIN (
+   SELECT EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) as [EndOfMonth]  
+  ,format(DATEFROMPARTS(YEAR(A.[WeekEnd] ) , MONTH(A.[WeekEnd] ), 1),'yyyy-MM') AS fecha_anio_mes
+          ,A.[Employee_Code]
+          ,MAX(M.[Overall Rating]) AS [Scorecard Rating]  
+    FROM [OGADW2024].[dbo].[vwHistoricalRosterWeekly] A (NOLOCK)  
+    LEFT JOIN [OGADW2024].[dbo].[tbEWS_SC_RAW] M ON A.[Employee_Code] = M.[Employee Code] AND format(DATEFROMPARTS(YEAR(A.[WeekEnd] ) , MONTH(A.[WeekEnd] ), 1),'yyyy-MM') = M.[Year-Month]
+   -- WHERE A.[Employee Code] = 1806881  
+    GROUP BY EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) 
+  ,format(DATEFROMPARTS(YEAR(A.[WeekEnd] ) , MONTH(A.[WeekEnd] ), 1),'yyyy-MM') 
+          ,A.[Employee_Code]
+) M ON A.[EndOfMonth] = M.[EndOfMonth] AND A.[Employee_Code] = M.[Employee_Code]
+LEFT JOIN (
+  SELECT EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) AS [EndOfMonth],  
+       FORMAT(DATEFROMPARTS(YEAR(A.[WeekEnd]), MONTH(A.[WeekEnd]), 1), 'yyyy-MM') AS fecha_anio_mes,  
+       A.[Employee_Code],  
+       NULLIF(COUNT(N.[EID]), 0) AS [CAP_PIP count]  
+FROM [OGADW2024].[dbo].[vwHistoricalRosterWeekly] A(NOLOCK)  
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_CAP_DP_RAW] N ON A.[Employee_Code] = N.[Employee ID (with leading zeroes)]  
+    AND EOMONTH(DATEADD(DAY, 0, [NOD Issued Date])) = EOMONTH(DATEADD(DAY, 0, A.[WeekEnd]))  
+--WHERE A.[Employee Code] = 1895767  
+GROUP BY EOMONTH(DATEADD(DAY, 0, A.[WeekEnd])),  
+         FORMAT(DATEFROMPARTS(YEAR(A.[WeekEnd]), MONTH(A.[WeekEnd]), 1), 'yyyy-MM'),  
+         A.[Employee_Code]  
+
+) N ON A.[EndOfMonth] = N.[EndOfMonth] AND A.[Employee_Code]   = N.[Employee_Code]  
+
+LEFT JOIN (
+ SELECT EOMONTH(DATEADD(DAY, 0,A.[WeekEnd])) as [EndOfMonth]   
+  ,format(DATEFROMPARTS(YEAR(A.[WeekEnd] ) , MONTH(A.[WeekEnd] ), 1),'yyyy-MM') AS fecha_anio_mes
+          ,A.[Employee_Code]  
+          ,sum(O.[TOTAL QVC INCENTIVES]) AS [QVC Amount]  
+    FROM [OGADW2024].[dbo].[vwHistoricalRosterWeekly] A (NOLOCK)  
+    LEFT JOIN [OGADW2024].[dbo].[tbEWS_QVC_RAW] O ON A.[Employee_Code]  = o.[ EMPLOYEE CODE]
+     AND format(DATEFROMPARTS(YEAR(A.[WeekEnd] ) , MONTH(A.[WeekEnd] ), 1),'yyyy-MM') = o.[Year-Month]
+    --WHERE A.[Employee Code] = 1895767  
+    GROUP BY EOMONTH(DATEADD(DAY, 0,A.[WeekEnd]))   
+  ,format(DATEFROMPARTS(YEAR(A.[WeekEnd] ) , MONTH(A.[WeekEnd] ), 1),'yyyy-MM') 
+          ,A.[Employee_Code]
+) O ON A.[EndOfMonth] = O.[EndOfMonth] AND A.[Employee_Code] = O.[Employee_Code]
+
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  C
+ON C.[Key] = A.[Variable11]  AND A.[Meeting hrs]+0.0001 >= C.[Max(MenorIgual)] AND A.[Meeting hrs]+0.0001 <= C.[Min]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  D
+ON D.[Key] = A.[Variable1]  AND A.[NCNS count] > d.[Min] AND A.[NCNS count] <= d.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  E
+ON E.[Key] = A.[Variable2] AND A.[Outage hrs] /NULLIF(A.[Scheduled Time hrs],0) > E.[Min]  AND A.[Outage hrs] /NULLIF(A.[Scheduled Time hrs],0) <= E.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  F
+ON F.[Key] = A.[Variable3]  AND A.[VTO hrs] /NULLIF(A.[Scheduled Time hrs],0) > F.[Min] AND A.[VTO hrs] /NULLIF(A.[Scheduled Time hrs],0) <=F.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  G
+ON G.[Key] = A.[Variable4]  AND A.[Unplanned Absence hrs] >G.[Min]  AND A.[Unplanned Absence hrs] <= G.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  H
+ON H.[Key] = A.[Variable7]  AND B.[Calls Handled]  / NULLIF(A.[Open Time hrs],0)  < H.[Min] AND B.[Calls Handled]  / NULLIF(A.[Open Time hrs],0)  >= H.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  I
+ON I.[Key] = A.[Variable10]  AND A.[Coaching hrs]+0.0001 <= I.[Min] AND A.[Coaching hrs]+0.0001  >= I.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  J
+ON J.[Key] = A.[Variable11]  AND A.[Meeting hrs]+0.0001 <= J.[Min] AND A.[Meeting hrs]+0.0001 >= J.[Max(MenorIgual)]
+
+
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  P
+ON P.[Key] = A.[Variable5]  AND N.[CAP_PIP count] > P.[Min] AND N.[CAP_PIP count] <= P.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  Q
+ON Q.[Key] = A.[Variable6]  AND L.[Absent Advocate Count] > Q.[Min] AND L.[Absent Advocate Count] <= Q.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  R
+ON R.[Key] = A.[Variable8]  AND M.[Scorecard Rating] < R.[Min] AND M.[Scorecard Rating] >= R.[Max(MenorIgual)]
+LEFT JOIN [OGADW2024].[dbo].[tbEWS_Conversion_Table]  S
+ON S.[Key] = A.[Variable9]  AND O.[QVC Amount]  < R.[Min] AND O.[QVC Amount] >= R.[Max(MenorIgual)]
+GROUP BY  A.[Employee_Code]
+      ,A.[NT_ID]
+      ,A.[Employee_Name]
+      ,A.[Date_of_Joining]
+      --,A.[Date]
+      ,A.[Loc_Name]
+      ,A.[Location_Code]
+      ,A.[Leader Name]
+      ,A.[Primary_Process_Type]
+      ,A.[Allocation_Status]
+      ,A.[Supervisor_Name]
+      ,A.[Production_Status]
+      ,A.[Department_Code]
+      ,A.[Department_Name]
+      ,A.[LOB]
+      ,A.[Offshore_Process_Name]
+	  ,A.[EndOfMonth]
+      ,A.[Open Time hrs]  
+      ,B.[Calls Handled]  
+      ,B.[Calls Handled]  / NULLIF(A.[Open Time hrs],0) 
+      ,A.[Scheduled Time hrs]
+      ,A.[NCNS count]
+      ,A.[Outage hrs]  
+      ,A.[Outage hrs] /NULLIF(A.[Scheduled Time hrs],0)
+      ,A.[VTO hrs]
+      ,A.[VTO hrs] /NULLIF(A.[Scheduled Time hrs],0)
+      ,A.[Unplanned Absence hrs]
+      ,A.[Coaching hrs]
+      ,A.[Coaching hrs] /NULLIF(A.[Scheduled Time hrs],0) 
+      ,A.[Meeting hrs]
+      ,A.[Meeting hrs] /NULLIF(A.[Scheduled Time hrs],0) 
+     ,c.[Number impact]
+     ,D.[Number impact] 
+     ,F.[Number impact] 
+     ,G.[Number impact] 
+     ,H.[Number impact] 
+     ,I.[Number impact] 
+     ,J.[Number impact] 
+     ,A.[Variable12]
+     ,A.[Variable11]
+    ,A.[Variable10]
+    ,A.[Variable9]
+    ,A.[Variable8]
+    ,A.[Variable7]
+    ,A.[Variable6]
+    ,A.[Variable5]
+    ,A.[Variable4]
+    ,A.[Variable3]
+    ,A.[Variable2]
+    ,A.[Variable1]
+,E.[Number impact]
+ 
+      ,L.[Absent Advocate Count]
+      ,M.[Scorecard Rating]
+      ,N.[CAP_PIP count] 
+      ,O.[QVC Amount] 
+      ,P.[Number impact]
+     ,Q.[Number impact]
+     ,R.[Number impact]
+     ,S.[Number impact]
+	
+	
