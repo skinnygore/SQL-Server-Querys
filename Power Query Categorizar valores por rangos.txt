@@ -22,3 +22,9 @@ Table.SelectRows(..., (StageRow) => StageRow[#"Min"] <= [#"Burnout Index"]) util
 [Number impact] se utiliza para acceder al valor de la columna "Number impact" de la fila resultante obtenida en el paso anterior. Esto extrae el valor de la columna "Number impact" de la última fila que cumple con la condición especificada.
 
 En resumen, esta parte del código crea una función anónima que se utiliza como argumento en Table.SelectRows para filtrar las filas de la tabla conversiontable según una condición. Luego, se extrae el valor de la columna "Number impact" de la última fila resultante que cumple con la condición.
+
+TbPivotReconStageQ2 es el nombre de una tabla en Power Query.
+(StageID) => StageID[ID] = [EID] es una función anónima que toma una fila individual (StageID) de la tabla TbPivotReconStageQ2 como parámetro y evalúa una condición. En este caso, la condición es que el valor de la columna "ID" en esa fila sea igual al valor de la columna "[EID]" de la tabla actual.
+Table.SelectRows(TbPivotReconStageQ2, (StageID) => StageID[ID] = [EID]) utiliza la función Table.SelectRows para seleccionar las filas de la tabla TbPivotReconStageQ2 que cumplen con la condición especificada en la función anónima anterior. En otras palabras, se filtran las filas de la tabla TbPivotReconStageQ2 para obtener solo las filas donde el valor de la columna "ID" coincide con el valor de la columna "[EID]" en la tabla actual.
+
+En resumen, esta parte del código selecciona las filas de la tabla TbPivotReconStageQ2 que cumplen con la condición de igualdad entre la columna "ID" y el valor de la columna "[EID]" en la tabla actual.
