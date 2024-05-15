@@ -1,0 +1,24 @@
+Categorizar datos de la tabla A usando 
+tabla B la cual tiene la categoria y los rangos
+
+La tabla b tiene que estar organizada de menor a mayor 
+(para fechas se deben de convertir a numeros enteros)
+
+Power Query Add custom column
+List.Last(
+Table.SelectRows(
+	Table.SelectRows(conversiontable,(StageID) => StageID[Variable] = "Burnout Category"),
+	(StageRow) => StageRow[#"Min"] <= [#"Burnout Index"])[Number impact])
+
+
+TableB: conversiontable
+TableB.CampoFiltro1 :conversiontable.[Variable]
+TableA.[CampoFiltro2]: TableA."Burnout Category" (En texto "" o Nombre de campo [])
+StageRow Tableb.[#"Min"] : Valor con el cual se va a realizar la evualcion <=
+
+La parte (StageRow) => StageRow[#"Min"] <= [#"Burnout Index"])[Number impact] del código es una función anónima que se utiliza como argumento en la función Table.SelectRows. A continuación, se explica en detalle cómo funciona esta parte del código:
+(StageRow) => StageRow[#"Min"] <= [#"Burnout Index"] es una función anónima que toma una fila individual (StageRow) como parámetro y evalúa una condición: si el valor de la columna "Min" en esa fila es menor o igual al valor de la columna "Burnout Index" de la tabla actual.
+Table.SelectRows(..., (StageRow) => StageRow[#"Min"] <= [#"Burnout Index"]) utiliza la función Table.SelectRows para seleccionar las filas que cumplen con la condición especificada en la función anónima anterior. En otras palabras, se filtran las filas de la tabla conversiontable para obtener solo las filas que tienen un valor de "Min" menor o igual al valor de "Burnout Index".
+[Number impact] se utiliza para acceder al valor de la columna "Number impact" de la fila resultante obtenida en el paso anterior. Esto extrae el valor de la columna "Number impact" de la última fila que cumple con la condición especificada.
+
+En resumen, esta parte del código crea una función anónima que se utiliza como argumento en Table.SelectRows para filtrar las filas de la tabla conversiontable según una condición. Luego, se extrae el valor de la columna "Number impact" de la última fila resultante que cumple con la condición.
