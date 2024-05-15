@@ -1,0 +1,41 @@
+SELECT a.[Date]
+      ,a.[ID]
+      ,a.[Name]
+      ,a.[Attendance Event]
+      ,a.[Scheduled Start]
+      ,a.[Scheduled End]
+      ,a.[Comments]
+      ,a.[Sup]
+      ,a.[Merge]
+      ,a.[Small]
+      ,a.[Scheduled]
+      ,a.[Present]
+      ,a.[Absent]
+      ,a.[NCNS]
+      ,a.[Perfect]
+      ,a.[DaysWorked In Prod]
+      ,a.[file]
+	  ,b.[Start Date]
+      ,b.[End Date]
+      ,b.[key]
+	  ,c.[Attribute]
+	  ,c.[Date] AS [DateAttribute]
+
+  FROM [20221027].[dbo].[tbCSOUSHealthAttendance] a (nolock)
+left join [20221027].[dbo].[vwCSORosterHIsctorical]b with (nolock)
+  on a.[ID] = try_cast(b.[EID] as int) and a.[Date] between try_cast(b.[Start Date] as date) and try_cast(b.[End Date] as date)
+left join 
+(     
+SELECT [ID]
+      ,[Name]
+      ,[Full Name]
+      ,[Wave]
+      ,[Attribute]
+      ,[Date]
+	  ,cast(COALESCE(DATEADD(DAY, -1, LEAD([Date]) OVER (PARTITION BY [ID] ORDER BY [Date])), GETDATE()) as date) AS [FechaFinal]
+      ,[Date Number Recon]
+  FROM [20221027].[dbo].[tbCSOUSHealthReconStageQ] (NOLOCK)
+) c
+  on a.[ID] = c.[ID] and a.[Date] between try_cast(c.[Date]as date) and try_cast(c.[FechaFinal] as date)
+  where a.[Attendance Event] is not null and a.[ID] Is not null and a.[Date] is not null
+  Order by a.[Date] desc
