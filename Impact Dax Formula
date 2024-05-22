@@ -1,0 +1,23 @@
+
+Obtener el impacto por individuo de una medida ejemplo
+
+xx.Medida [%UES]
+
+xx.%Missing to 100 = [%UES]-1
+ #Obtner cuanto le hace falta la medida para llegar a cierta meta en este caso es uno por que el kpi es % de 0 a 1
+
+xx.#Survey = COUNT(TbQualtricsSQL[UES Score]) 
+ #Obtener la cantidad de unidades para la medida para realizar la ponderacion y conocer que % impacta mas debido al volumen recibido
+
+xx.Impact Numerator = ([%Missing to 100]*[#Survey])
+ #Se calcula el promedio ponderado
+
+xx.#TotalSurveys = 
+VAR SelectedMonth = SELECTEDVALUE(TbCalendar[Year Date])
+RETURN
+CALCULATE([#Survey],ALLEXCEPT(TbRosterSharepoint,TbRosterSharepoint[LOB]),TbCalendar[Year Date]= SelectedMonth)
+ #Se realiza la medida para obtener el denominador el total de unidades que se seleccionen durante un periodo de tiempo
+
+
+xx.Impact = abs(DIVIDE([Impact Numerator],[#TotalSurveys]))
+ #Se divide las dos medidas Impact Numerator y #TotalSurveys revisar su composicion
